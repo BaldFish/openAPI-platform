@@ -102,8 +102,8 @@
   }
 
   .head-wrap {
-    position: absolute;
-    z-index: 1000;
+    /*position: absolute;
+    z-index: 1000;*/
     width: 100%;
     height: 100px;
     background-color: #2e3644;
@@ -113,7 +113,7 @@
       width: 1200px;
       height: 100px;
       margin: 0 auto;
-      padding 4px 35px
+      padding 4px 0
       font-size 20px;
       color #ffffff
       span{
@@ -122,7 +122,7 @@
         top: 6px;
       }
       ul {
-        width 720px
+        width 790px
         display inline-block
         text-align right
         margin-top 14px
