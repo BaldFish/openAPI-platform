@@ -1,7 +1,32 @@
 <template>
   <div class="apiList">
     <div class="apiList-search">
-
+      <div class="search-select">
+        <label>名称：</label>
+        <div class="select" @click="showSelect">
+          <span>{{defaultOption}}</span>
+          <i></i>
+          <ul v-if="isSelectShow" @mouseleave.stop="leaveUl">
+            <li @click="choice('资产创建接口')">资产创建接口</li>
+            <li @click="choice('记录存证接口')">记录存证接口</li>
+            <li @click="choice('资产创建接口1')">资产创建接口1</li>
+            <li @click="choice('记录存证接口2')">记录存证接口2</li>
+          </ul>
+        </div>
+      </div>
+      <div class="search-time">
+        <label>查询时间：</label>
+        <template>
+          <el-date-picker
+            v-model="value6"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期">
+          </el-date-picker>
+        </template>
+      </div>
+      <input type="button" value="查询">
     </div>
     <div class="apiList-ability">
       <table>
@@ -78,7 +103,7 @@
           <td>-</td>
         </tr>
         <tr>
-          <td>资产创建接口666</td>
+          <td>资产创建接口</td>
           <td>2018-11-04 17:45:00</td>
           <td>-0.5</td>
           <td>30720.00</td>
@@ -95,7 +120,11 @@
     name: "apiList",
     components: {},
     data() {
-      return {}
+      return {
+        isSelectShow: false,
+        defaultOption: "资产创建接口",
+        value6: '',
+      }
     },
     created() {
     },
@@ -105,7 +134,20 @@
     },
     watch: {},
     computed: {},
-    methods: {},
+    methods: {
+      //select显示
+      showSelect(){
+        this.isSelectShow = !this.isSelectShow
+      },
+      //select选择
+      choice(option){
+        this.defaultOption = option
+      },
+      //鼠标移出
+      leaveUl() {
+        this.isSelectShow = false
+      },
+    },
   }
 </script>
 
@@ -119,6 +161,76 @@
       background-color: #f6f8fd;
       border: solid 1px #bfbfbf;
       margin: 22px 0 27px 0
+      label{
+        font-size: 20px;
+        color: #333333;
+        float left
+      }
+      input{
+        width: 110px;
+        height: 38px;
+        line-height 38px
+        background-color: #1d79fe;
+        border-radius: 10px;
+        cursor: pointer;
+        outline none
+        font-size: 16px;
+        color: #ffffff;
+        float right
+        margin: 16px 20px 16px 0
+      }
+      .search-select{
+        float left
+        margin-left 30px
+        line-height 70px
+        .select{
+          width: 180px;
+          height: 34px;
+          line-height 34px
+          background-color: #ffffff;
+          border: solid 1px #bfbfbf;
+          float left
+          margin-top 18px
+          box-sizing border-box
+          padding-left 15px
+          cursor pointer
+          i{
+            width: 24px;
+            height: 15px;
+            display inline-block
+            background url("../../common/images/icon_select.png") no-repeat center
+            background-size 100% 100%
+            margin: 10px;
+            float: right;
+            cursor pointer
+          }
+          ul {
+            width: 180px
+            box-sizing border-box
+            height: auto
+            background-color: #ffffff;
+            box-shadow: 0 5px 15px 0 rgba(175, 192, 209, 0.55);
+            position relative
+            right: 16px
+            padding-left 15px
+            li{
+              font-size: 14px
+              color: #333333
+              cursor pointer
+            }
+            li:hover{
+              color: #1d79fe;
+            }
+          }
+        }
+      }
+
+      .search-time{
+        line-height 70px
+        margin-left 60px
+        float: left;
+      }
+
     }
     .apiList-ability{
       width: 1200px;
@@ -214,7 +326,7 @@
               width: 36px;
               height: 36px;
               display inline-block
-              background url("../../common/images/icon_ability.png") no-repeat center
+              background url("../../common/images/icon_flow.png") no-repeat center
               background-size 100% 100%
               float left
               margin: 17px 12px
@@ -234,7 +346,7 @@
             line-height 60px
             text-align left
             th:nth-child(1){
-              width: 200px
+              width: 240px;
               padding-left 50px
             }
             th:nth-child(2){
