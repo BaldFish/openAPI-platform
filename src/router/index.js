@@ -4,6 +4,7 @@ import myHome from '@/components/home/home'
 import myApiList from '@/components/apiList/apiList'
 import myAbility from '@/components/ability/ability'
 import myLogin from '@/components/login/login'
+import myAccount from '@/components/account/account'
 Vue.use(Router);
 
 export default new Router({
@@ -32,6 +33,11 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: myLogin
+    },
+    {
+      path: '/account',
+      name: 'account',
+      component: myAccount
     },
   ]
 })
