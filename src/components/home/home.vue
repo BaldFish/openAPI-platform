@@ -1,8 +1,9 @@
 <template>
   <div class="home">
     <div class="home-user">
-      <p>欢迎您，<span>z.chen@cnlaunch.com</span></p>
-      <p>账号余额：<span>55000.00</span></p>
+      <p>欢迎您，<span>{{userInfo.email}}</span></p>
+      <p>账号余额：<span>{{userInfo.balance}}</span></p>
+      <p>已消费金额：<span>{{userInfo.balance}}</span></p>
     </div>
     <div class="home-ability">
       <table>
@@ -11,7 +12,7 @@
             <i></i>
             <p>已接入能力</p>
           </div>
-          <div class="table-handle">
+          <!--<div class="table-handle">
             <div class="add-ability">
               <router-link to="/">
                 <i></i>
@@ -24,61 +25,28 @@
                 <p>删除能力</p>
               </router-link>
             </div>
-          </div>
+          </div>-->
         </caption>
         <thead>
-          <tr>
-            <th>&nbsp;</th>
-            <th>能力</th>
-            <th>API</th>
-            <th>本月调用量</th>
-          </tr>
+        <tr>
+          <th>&nbsp;</th>
+          <th>能力</th>
+          <th>API</th>
+          <th>本月调用量</th>
+        </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>
-              <label>
-                <input type="checkbox" name="checkbox">
-                <i></i>
-              </label>
-            </td>
-            <td>ERC721</td>
-            <td>资产创建接口</td>
-            <td>3070</td>
-          </tr>
-          <tr>
-            <td>
-              <label>
-                <input type="checkbox" name="checkbox">
-                <i></i>
-              </label>
-            </td>
-            <td>ERC725</td>
-            <td>记录存证接口</td>
-            <td>3070</td>
-          </tr>
-          <tr>
-            <td>
-              <label>
-                <input type="checkbox" name="checkbox">
-                <i></i>
-              </label>
-            </td>
-            <td>ERC721</td>
-            <td>资产创建接口</td>
-            <td>3070</td>
-          </tr>
-          <tr>
-            <td>
-              <label>
-                <input type="checkbox" name="checkbox">
-                <i></i>
-              </label>
-            </td>
-            <td>ERC721</td>
-            <td>资产创建接口</td>
-            <td>3070</td>
-          </tr>
+        <tr v-for="item of abilityList" :key="item.api_id">
+          <td>
+            <!--<label>
+              <input type="checkbox" name="checkbox">
+              <i></i>
+            </label>-->
+          </td>
+          <td>{{item.api_type_name}}</td>
+          <td>{{item.api_name}}</td>
+          <td>{{item.api_count}}</td>
+        </tr>
         </tbody>
       </table>
     </div>
@@ -90,25 +58,77 @@
     name: "home",
     components: {},
     data() {
-      return {}
+      return {
+        userId: "",
+        sessionId: "",
+        token: "",
+        userInfo: {},
+        page:1,
+        limit:10,
+        selectId:"all",
+        abilityList:[],
+        time:["",""]
+      }
     },
     created() {
     },
-    beforeMount(){
+    beforeMount() {
+      this.sessionId = "5c3fe547b8e2f400017fb67d";
+      this.userId = "5a6eb317e2794d3441d45181";
+      this.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NjMyNDMzMzUsInVzZXJfaWQiOiI1YTZlYjMxN2UyNzk0ZDM0NDFkNDUxODEiLCJkZXZpY2VfaWQiOiIxIn0.DrBCErsD9rw5ac0JrLdYgH_gO9hUk-kjQJ_cu2wdwiE";
+      this.getUserInfo();
+      this.getAbilityList();
     },
     mounted() {
     },
-    watch: {},
+    watch: {
+      time: function () {
+        if(this.time===null){
+          this.time=["",""]
+        }
+      }
+    },
     computed: {},
-    methods: {},
+    methods: {
+      //获取用户信息
+      getUserInfo() {
+        this.$axios({
+          method: 'GET',
+          url: `${this.$baseURL}/v1/platform/user/info/${this.userId}`,
+          headers: {
+            'X-Access-Token': this.token,
+          }
+        }).then(res => {
+          this.userInfo = res.data;
+        }).catch(error => {
+          console.log(error)
+        })
+      },
+      //获取已接入能力列表
+      getAbilityList(){
+        this.$axios({
+          method: 'GET',
+          url:
+            `${this.$baseURL}/v1/platform/user-apis/${this.userId}?api_id=${this.selectId}&page=${this.page}&limit=${this.limit}&start_date=${this.time[0]}&end_date=${this.time[1]}`,
+          headers: {
+            'X-Access-Token': this.token,
+          }
+        }).then(res => {
+          this.abilityList=res.data.data.res_list
+        }).catch(error => {
+          console.log(error)
+        })
+      }
+    },
   }
 </script>
 
 <style scoped lang="stylus">
   .home {
-    width:1200px
+    width: 1200px
     margin: 0 auto
-    .home-user{
+    
+    .home-user {
       width: 1200px;
       height: 80px;
       line-height 80px
@@ -117,32 +137,36 @@
       font-size: 18px;
       color: #707070;
       margin: 22px 0 20px 0
-      p{
+      
+      p {
         float left
-        span{
+        margin-left 70px
+        span {
           font-size: 26px;
           color: #333333;
         }
       }
-      p:nth-child(1){
-        margin: 0 218px 0 60px
-      }
     }
-    .home-ability{
+    
+    .home-ability {
       width: 1200px;
       height: 100%;
       border: solid 1px #bfbfbf;
-      table{
+      
+      table {
         width: 1200px;
-        caption{
+        
+        caption {
           height: 70px;
           background-color: #f6f8fd;
-          .table-title{
+          
+          .table-title {
             float left
             width: 300px
             height: 70px;
             line-height 70px
-            i{
+            
+            i {
               width: 36px;
               height: 36px;
               display inline-block
@@ -151,17 +175,20 @@
               float left
               margin: 17px 12px
             }
-            p{
+            
+            p {
               float left
               font-size: 20px;
               color: #333333;
             }
           }
-          .table-handle{
-            width:248px
+          
+          .table-handle {
+            width: 248px
             height: 70px
             float right
-            div{
+            
+            div {
               width: 110px;
               height: 38px;
               line-height 38px
@@ -169,64 +196,79 @@
               font-size: 16px;
               float left
               margin-top 16px
-              i{
+              
+              i {
                 width: 20px;
                 height: 20px;
                 display inline-block
                 float left
-                margin:9px
+                margin: 9px
               }
-              p{
+              
+              p {
                 float left
               }
             }
-            .add-ability{
+            
+            .add-ability {
               background-color: #1d79fe;
-              i{
+              
+              i {
                 background url("../../common/images/add_ability.png") no-repeat center
                 background-size 100% 100%
               }
-              a{
+              
+              a {
                 color: #ffffff;
               }
             }
-            .del-ability{
+            
+            .del-ability {
               background-color #ffffff
               border: solid 1px #1d79fe;
               margin-right 12px
               margin-left 12px
-              i{
+              
+              i {
                 background url("../../common/images/del_ability.png") no-repeat center
                 background-size 100% 100%
               }
-              a{
+              
+              a {
                 color: #1d79fe;
               }
             }
           }
         }
-        thead{
+        
+        thead {
           font-size: 16px;
           color: #333333;
-          tr{
-            height:60px
+          
+          tr {
+            height: 60px
             line-height 60px
             text-align left
-            th:nth-child(1){
+            
+            th:nth-child(1) {
               width: 200px
             }
-            th:nth-child(2){
+            
+            th:nth-child(2) {
               width: 320px
             }
           }
         }
-        tbody{
+        
+        tbody {
           font-size: 18px;
           color: #666666;
-          tr{
+          
+          tr {
             height: 50px;
             line-height 50px
-            i{
+            
+            i {
               width: 22px;
               height: 22px;
               display inline-block
@@ -236,15 +278,18 @@
               top: 5px;
               left: 89px
             }
-            input{
+            
+            input {
               display none
             }
-            input:checked + i{
+            
+            input:checked + i {
               background url("../../common/images/checked.png") no-repeat center
               background-size 100% 100%
             }
           }
-          tr:nth-child(odd){
+          
+          tr:nth-child(odd) {
             background-color: #f6f8fd;
           }
         }
