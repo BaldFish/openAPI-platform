@@ -6,22 +6,20 @@
         <ul>
           <li>
             <i></i>
-            <input type="text" placeholder="请输入用户名">
+            <input type="text" v-model="user_name" placeholder="请输入用户名">
           </li>
           <li>
             <i></i>
-            <input type="text" placeholder="请输入密码">
+            <input type="password" v-model="passwd" placeholder="请输入密码">
           </li>
           <li>
             <i></i>
-            <input type="text" placeholder="请输入验证码">
-            <img @click="getCaptcha" :src="captcha_number" alt="">
+            <input type="text" v-model="captcha_number" placeholder="请输入验证码">
+            <img @click="getCaptcha" :src="captcha_img" alt="">
           </li>
         </ul>
-        <p class="checkError">密码输入错误</p>
-        <router-link to="">
-          <p class="login-btn">登录</p>
-        </router-link>
+        <p class="checkError">{{errorMsg}}</p>
+        <p class="login-btn" @click="login">登录</p>
       </div>
     </div>
   </div>
@@ -33,8 +31,12 @@
     components: {},
     data() {
       return {
-        captcha_number: "",
-        captcha_id: "",
+        user_name:"", //用户名
+        passwd:"",//用户密码
+        captcha_number: "",//图形验证码
+        captcha_id: "",//图形验证码id
+        captcha_img: "",//图形
+        errorMsg:"",//错误信息
       }
     },
     created() {
@@ -47,7 +49,20 @@
       });
     },
     watch: {},
-    computed: {},
+    computed: {
+      uuid() {
+        var s = [];
+        var hexDigits = "0123456789abcdef";
+        for (var i = 0; i < 36; i++) {
+          s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+        }
+        s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+        s[8] = s[13] = s[18] = s[23] = "-";
+        var uuid = s.join("");
+        return uuid;
+      }
+    },
     methods: {
       //获取图片验证码
       getCaptcha() {
@@ -56,10 +71,31 @@
           url: `${this.$baseURL}/v1/captcha`,
           data: this.$querystring.stringify({})
         }).then(res => {
-          this.captcha_number = `data:image/png;base64,${res.data.png}`;
+          this.captcha_img = `data:image/png;base64,${res.data.png}`;
           this.captcha_id = res.data.captcha_id;
         }).catch(error => {
           console.log(error);
+        });
+      },
+      //登录
+      login() {
+        let loginData = {
+          user_name: this.user_name, //用户名
+          passwd: this.passwd, //密码
+          captcha_id: this.captcha_id, //图片验证码ID
+          captcha_number: this.captcha_number, //图片验证码
+          device_id: this.uuid, //设备ID
+        };
+        this.$axios({
+          method: 'post',
+          url: `${this.$baseURL}/v1/platform/user/login`,
+          data: this.$querystring.stringify(loginData)
+        }).then(res => {
+          window.sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
+          this.$router.push({path: '/home'});
+        }).catch(error => {
+          console.log(error);
+          this.errorMsg = error
         });
       },
     },
@@ -100,11 +136,15 @@
               position: relative
               top:3px
             }
+            input{
+              outline none
+            }
             img{
               width: 91px;
               height: 32px;
               float right
               margin-right 6px
+              cursor pointer
             }
           }
           li:nth-child(1) i{
@@ -130,6 +170,7 @@
           }
         }
         .checkError{
+          height: 14px
           font-size: 14px;
           color: #e60000;
           margin:14px 0 22px 0
@@ -143,6 +184,7 @@
           text-align center
           color #ffffff
           font-size: 18px;
+          cursor pointer
         }
       }
     }

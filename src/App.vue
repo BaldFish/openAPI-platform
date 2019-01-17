@@ -14,18 +14,20 @@
             <router-link to="/ability">能力库</router-link>
           </li>
         </ul>
-        <div class="no_login" v-if="!isLogin">
-          <a href="javascript:void(0)" @click="login">登录</a>
+        <div class="no_login" v-if="isLogin">
+          <a href="javascript:void(0)">登录</a>
         </div>
-        <div class="login" v-if="isLogin">
+        <div class="login" v-if="!isLogin">
           <div @click.stop="toggle">
             <img src="@/common/images/bg.jpg" class="user-head" alt="">
             admin&nbsp;
             <img src="@/common/images/down.png" alt="">
           </div>
           <ul v-if="switchover" @mouseleave.stop="leaveUl">
-            <li><a href="" target="_blank">账户信息</a></li>
-            <li @click.stop="dropOut">退出</li>
+            <li>
+              <router-link to="/account">账户信息</router-link>
+            </li>
+            <li @click.stop="logOut">退出</li>
           </ul>
         </div>
       </div>
@@ -47,43 +49,45 @@
     },
     created() {
     },
-    mounted() {
-      this.changTop()
+    beforeMount() {
+      if(!sessionStorage.userInfo){
+        this.$router.push("/login")
+      }
     },
-    watch: {},
+    mounted() {
+      if (this.$route.path == "/login") {
+        this.isShowTopSearch = false;
+      }
+    },
+    watch: {
+      //监听路由变化执行方法
+      $route(to, from) {
+        if (from.path == "/login") {
+          this.isShowTopSearch = true;
+        }
+        if (to.path == "/login") {
+          this.isShowTopSearch = false;
+        }
+      }
+    },
     computed: {},
     methods: {
-      changTop() {
-       if (this.$route.path == "/login") {
-         this.isShowTopSearch = false;
-       }
-      },
       toggle() {
         this.switchover = !this.switchover
       },
       leaveUl() {
         this.switchover = false
       },
-      login() {
-        let redirectURL = window.location.href;
-        let url=`?redirectURL=${redirectURL}`;
-        window.location.href=`${loginPlatform}/login${url}`;
-      },
-      dropOut() {
+      logOut() {
         let sessionsId = JSON.parse(sessionStorage.getItem("userInfo")).session_id;
         this.$axios({
           method: 'DELETE',
-          url: `${this.$baseURL}/v1/sessions/${sessionsId}`,
+          url: `${this.$baseURL}/v1/platform/user/signout/${sessionsId}`,
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           }
         }).then(res => {
-          sessionStorage.removeItem('loginInfo');
           sessionStorage.removeItem('userInfo');
-          /*document.cookie = `token=;expires=${new Date(0)}`;
-          document.cookie = `user_id=;expires=${new Date(0)}`;*/
-          document.cookie = `token=;expires=${new Date(0)};domain=.datajs.com.cn`;
-          document.cookie = `user_id=;expires=${new Date(0)};domain=.datajs.com.cn`;
           this.switchover = false;
           location.reload()
         }).catch(error => {
