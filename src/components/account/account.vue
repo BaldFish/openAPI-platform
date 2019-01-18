@@ -9,17 +9,17 @@
         <li class="clearfix">
           <label>注册账号</label>
           <p>{{accountInfo.email}}</p>
-          <el-button type="text" @click="dialogPwdVisible = true">修改登录密码&nbsp;></el-button>
+          <el-button type="text" @click="openPwdModal">修改登录密码&nbsp;></el-button>
           <el-dialog title="修改登录密码" :visible.sync="dialogPwdVisible">
             <el-form :model="formPwd">
               <el-form-item label="旧密码：" :label-width="formLabelWidth">
-                <el-input type="password" v-model="formPwd.old" autocomplete="off" placeholder="请输入旧密码"></el-input>
+                <el-input type="password" v-model="formPwd.old" auto-complete="off" placeholder="请输入旧密码"></el-input>
               </el-form-item>
               <el-form-item label="新密码：" :label-width="formLabelWidth">
-                <el-input type="password" v-model="formPwd.new" autocomplete="off" @blur="checkPwd" placeholder="请输入6～20位包含中英文字符密码"></el-input>
+                <el-input type="password" v-model="formPwd.new" auto-complete="off" @blur="checkPwd" placeholder="请输入6～20位包含中英文字符密码"></el-input>
               </el-form-item>
               <el-form-item label="重复新密码：" :label-width="formLabelWidth">
-                <el-input type="password" v-model="formPwd.newRepeat" autocomplete="off" @blur="checkPwd" placeholder="请重复密码"></el-input>
+                <el-input type="password" v-model="formPwd.newRepeat" auto-complete="off" @blur="checkPwd" placeholder="请重复密码"></el-input>
                 <span class="error-pwd">{{errorPwd}}</span>
               </el-form-item>
             </el-form>
@@ -35,21 +35,21 @@
         </li>
         <li class="clearfix">
           <label>绑定手机</label>
-          <p style="margin-right: 20px">{{accountInfo.phone.slice(3)}}</p>
-          <el-button type="text" @click="dialogBindVisible = true" class="to-bind" v-if="!accountInfo.phone">去绑定&nbsp;></el-button>
-          <el-button type="text" @click="dialogBindVisible = true" class="to-bind" v-else>去换绑&nbsp;></el-button>
+          <p style="margin-right: 20px">{{accountInfo.phone}}</p>
+          <el-button type="text" @click="openPhoneModal" class="to-bind" v-if="!accountInfo.phone">去绑定&nbsp;></el-button>
+          <el-button type="text" @click="openPhoneModal" class="to-bind" v-else>去换绑&nbsp;></el-button>
           <el-dialog title="绑定手机号" :visible.sync="dialogBindVisible" class="bind-phone">
             <div v-if="isSuccess">
               <el-form :model="formBindPhone">
                 <el-form-item label="输入绑定手机号码：" :label-width="formLabelWidth">
-                  <el-input v-model="formBindPhone.phone" autocomplete="off" placeholder="请输入手机号"></el-input>
+                  <el-input v-model="formBindPhone.phone" auto-complete="off" placeholder="请输入手机号"></el-input>
                 </el-form-item>
                 <el-form-item label="图形验证码：" :label-width="formLabelWidth">
-                  <el-input v-model="formBindPhone.captcha_number" autocomplete="off" placeholder="请输入图形验证码"></el-input>
+                  <el-input v-model="formBindPhone.captcha_number" auto-complete="off" placeholder="请输入图形验证码"></el-input>
                   <img :src="captcha_img" alt="" class="img-code" @click="getCaptcha">
                 </el-form-item>
                 <el-form-item label="短信验证码：" :label-width="formLabelWidth">
-                  <el-input v-model="formBindPhone.code" autocomplete="off" placeholder="请输入短信验证码"></el-input>
+                  <el-input v-model="formBindPhone.code" auto-complete="off" placeholder="请输入短信验证码"></el-input>
                   <span class="send-phone" v-if="isSend" @click="getCode">发送</span>
                   <span class="send-phone count_down" v-else>{{second}}s</span>
                   <p class="error-pwd">{{errorPhone}}</p>
@@ -66,7 +66,7 @@
                 <p v-else>手机号换绑成功</p>
               </div>
               <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="dialogBindVisible = false">确 定</el-button>
+                <el-button type="primary" @click="closeBindModal">确 定</el-button>
               </div>
             </div>
           </el-dialog>
@@ -82,7 +82,7 @@
         <li class="clearfix">
           <label>账号余额</label>
           <p>{{accountInfo.balance}}</p>
-          <el-button type="text" @click="dialogWarningVisible = true">金额预警&nbsp;></el-button>
+          <el-button type="text" @click="openWarningModal">金额预警&nbsp;></el-button>
           <el-dialog title="预警设置" :visible.sync="dialogWarningVisible">
             <el-form :model="formWarning">
               <el-form-item label="是否开启：" :label-width="formLabelWidth">
@@ -100,17 +100,17 @@
                 </div>
               </el-form-item>
               <el-form-item label="预警金额：" :label-width="formLabelWidth">
-                <el-input v-model="formWarning.amount" autocomplete="off" placeholder="请输入预警金额"></el-input>
+                <el-input v-model="formWarning.amount" auto-complete="off" placeholder="请输入预警金额"></el-input>
               </el-form-item>
               <el-form-item label="预警手机号：" :label-width="formLabelWidth">
-                <el-input v-model="formWarning.phone" autocomplete="off" placeholder="请输入预警手机号"></el-input>
+                <p style="margin-top: 0">{{accountInfo.phone}}</p>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="dialogWarningVisible = false">确 定</el-button>
+              <el-button type="primary" @click="setWarning">确 定</el-button>
             </div>
           </el-dialog>
-          <router-link to="" class="to-flow">
+          <router-link to="/apiList" class="to-flow">
             <span>交易明细&nbsp;></span>
           </router-link>
         </li>
@@ -139,13 +139,9 @@
           captcha_number: '',
           code: '',
         },
-        form: {
-          name: '',
-        },
         formWarning: {
           status: '1',
           amount: '',
-          phone: '',
         },
         formLabelWidth: '120px',
         accountInfo:"",
@@ -183,10 +179,22 @@
             "X-Access-Token": this.userInfo.token,
           }
         }).then(res => {
-          this.accountInfo = res.data
+          this.accountInfo = res.data;
+          this.accountInfo.phone = this.accountInfo.phone.slice(3)
         }).catch(error => {
           console.log(error);
         })
+      },
+      //打开密码modal
+      openPwdModal(){
+        this.dialogPwdVisible = true;
+        //重置数据
+        this.formPwd = {
+          old: '',
+          new: '',
+          newRepeat: '',
+        };
+        this.errorPwd = ""
       },
       //修改密码
       modifyPassword() {
@@ -201,7 +209,7 @@
             },
             data: this.$querystring.stringify(this.formPwd)
           }).then(res => {
-            this.dialogPwdVisible = false
+            this.dialogPwdVisible = false;
           }).catch(error => {
             console.log(error);
           })
@@ -215,9 +223,23 @@
           this.errorPwd = ""
         }
       },
-      //关闭modal
-      closeModal(){
-
+      //打开手机号modal
+      openPhoneModal(){
+        this.dialogBindVisible = true;
+        //重置数据
+        this.isSend = true;
+        this.formBindPhone = {
+          phone: '',
+          captcha_number: '',
+          code: '',
+        };
+      },
+      //关闭绑定手机号modal
+      closeBindModal(){
+        this.dialogBindVisible = false;
+        this.isSuccess = true;
+        //获取用户信息
+        this.getAccountInfo();
       },
       //获取图片验证码
       getCaptcha() {
@@ -265,9 +287,6 @@
         if(this.formBindPhone.phone){
           this.formBindPhone.phone = "+86" + this.formBindPhone.phone;
         }
-
-        console.log(this.formBindPhone)
-
         this.$axios({
           method: 'PATCH',
           url: `${this.$baseURL}/v1/platform/user/phone/change`,
@@ -277,19 +296,57 @@
           },
           data: this.$querystring.stringify(this.formBindPhone)
         }).then(res => {
-
-
-          //console.log(res.data)
-          this.isSuccess = false
+          this.isSuccess = false;
         }).catch(error => {
-
           //this.errorPhone = res.data
           console.log(error,"error");
         })
-
-
-
       },
+      //打开金额预警modal
+      openWarningModal(){
+        if(this.accountInfo.phone){
+          this.dialogWarningVisible = true;
+          //重置数据
+          this.formWarning = {
+            status: '1',
+            amount: '',
+          }
+        } else {
+          this.$alert('请先绑定手机号', '提示', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.dialogBindVisible = true;
+              //重置数据
+              this.isSend = true;
+              this.formBindPhone = {
+                phone: '',
+                captcha_number: '',
+                code: '',
+              };
+            }
+          });
+        }
+      },
+      //预警设置
+      setWarning(){
+        if(this.formWarning.amount){
+          this.formWarning.user_id = this.userInfo.user_id;
+          this.$axios({
+            method: 'POST',
+            url: `${this.$baseURL}/v1/platform/user/balance/warning`,
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-Access-Token": this.userInfo.token,
+            },
+            data: this.$querystring.stringify(this.formWarning)
+          }).then(res => {
+            this.dialogWarningVisible = false;
+          }).catch(error => {
+            console.log(error);
+          })
+        }
+      }
+
 
     },
   }
@@ -354,6 +411,9 @@
 <style lang="stylus">
   .el-button{
     padding: 4px 20px;
+  }
+  .el-message-box__btns button{
+    padding: 9px 15px;
   }
   .el-button--text, .el-button--text:hover{
     color: #e60000 !important;

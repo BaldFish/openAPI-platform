@@ -95,7 +95,7 @@
           this.$router.push({path: '/home'});
         }).catch(error => {
           console.log(error);
-          this.errorMsg = error
+          //this.errorMsg = error
         });
       },
     },
