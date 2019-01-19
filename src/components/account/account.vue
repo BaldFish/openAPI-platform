@@ -103,7 +103,7 @@
                 <el-input v-model="formWarning.amount" auto-complete="off" placeholder="请输入预警金额"></el-input>
               </el-form-item>
               <el-form-item label="预警手机号：" :label-width="formLabelWidth">
-                <p style="margin-top: 0">{{accountInfo.phone}}</p>
+                <p style="margin-top: 0;line-height: 40px">{{accountInfo.phone}}</p>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -394,7 +394,8 @@
             font-size: 16px;
             color: #666666;
             float left
-            margin-top: 4px;
+            line-height: 24px;
+            vertical-align: middle;
           }
           .to-flow{
             font-size: 14px;
@@ -504,12 +505,12 @@
     }
     .img-code{
       width: 58px;
-      height: 26px;
-      cursor pointer
+      height: 30px;
+      cursor: pointer;
       float: right;
       position: relative;
       right: 8px;
-      top: -34.5px;
+      top: -36px;
     }
     .send-phone{
       width: 58px;
