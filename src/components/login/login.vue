@@ -2,7 +2,7 @@
   <div class="login">
     <div class="login-container">
       <div class="content">
-        <p class="title">区块链接口开放平台</p>
+        <p class="title">元征区块链开放平台</p>
         <ul>
           <li>
             <i></i>

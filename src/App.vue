@@ -2,7 +2,7 @@
   <div id="app">
     <div class="head-wrap" ref="head" v-if="isShowTopSearch">
       <div class="head">
-        <span>区块链接口开放平台</span>
+        <span>元征区块链开放平台</span>
         <ul class="">
           <li class="nav">
             <router-link to="/home">首页</router-link>
@@ -11,16 +11,29 @@
             <router-link to="/apiList">接口统计</router-link>
           </li>
           <li class="nav">
-            <router-link to="/ability">能力库</router-link>
+            <router-link to="/ability">API库</router-link>
+          </li>
+          <li class="nav login" v-if="isLogin">
+            <div @click.stop="toggle">
+              <img src="@/common/images/bg.jpg" alt="" class="img_l" >
+              <span>{{userName}}</span>
+              <img src="@/common/images/down.png" alt="" class="img_r">
+            </div>
+            <ul v-if="switchover" @mouseleave.stop="leaveUl">
+              <li>
+                <router-link to="/account">账户信息</router-link>
+              </li>
+              <li @click.stop="logOut">退出</li>
+            </ul>
           </li>
         </ul>
-        <div class="no_login" v-if="isLogin">
+        <!--<div class="no_login" v-if="!isLogin">
           <a href="javascript:void(0)">登录</a>
-        </div>
-        <div class="login" v-if="!isLogin">
+        </div>-->
+        <!--<div class="login" v-if="isLogin">
           <div @click.stop="toggle">
             <img src="@/common/images/bg.jpg" class="user-head" alt="">
-            admin&nbsp;
+            <span>{{userName}}</span>&nbsp;
             <img src="@/common/images/down.png" alt="">
           </div>
           <ul v-if="switchover" @mouseleave.stop="leaveUl">
@@ -29,7 +42,7 @@
             </li>
             <li @click.stop="logOut">退出</li>
           </ul>
-        </div>
+        </div>-->
       </div>
     </div>
     <router-view class="main"></router-view>
@@ -43,8 +56,9 @@
     data() {
       return {
         isShowTopSearch: true,
-        isLogin: false,
+        isLogin: true,
         switchover: false,
+        userName:""
       }
     },
     created() {
@@ -67,6 +81,9 @@
         }
         if (to.path == "/login") {
           this.isShowTopSearch = false;
+        }
+        if(sessionStorage.userInfo){
+          this.userName=JSON.parse(sessionStorage.getItem("userInfo")).email;
         }
       }
     },
@@ -126,10 +143,11 @@
         top: 6px;
       }
       ul {
-        width 790px
+        width 1000px
         display inline-block
         text-align right
         margin-top 14px
+        font-size 0
         .nav {
           display: inline-block;
           margin-right 70px
@@ -150,6 +168,55 @@
         .nav:last-child {
           margin-right 0
         }
+        .login {
+          vertical-align top
+          display inline-block
+          cursor pointer
+          position relative
+          color #ffffff
+          font-size 0
+          line-height 54px
+          .img_l{
+            vertical-align middle
+            width: 28px;
+            height: 28px;
+            border-radius 50%
+            margin-right: 10px;
+          }
+          span{
+            font-size 16px
+          }
+          .img_r {
+            vertical-align middle
+            width: 13px;
+            height: 9px;
+            margin-left 10px
+          }
+          ul {
+            background-color: #fff;
+            position: absolute;
+            top: 68px;
+            right: 10px;
+            text-align: center;
+            width: 130px;
+            font-size: 16px;
+            box-shadow: 0 5px 15px 0 rgba(175, 192, 209, 0.55);
+            li {
+              height 40px
+              line-height 40px
+              color #333333
+              a {
+                color #333333
+              }
+            }
+            li:hover {
+              color #1d79fe
+              a {
+                color #1d79fe
+              }
+            }
+          }
+        }
       }
       .no_login {
         vertical-align top
@@ -162,52 +229,6 @@
           font-size 16px
           margin-left 28px
           color: #ffffff;
-        }
-      }
-      .login {
-        display inline-block
-        cursor pointer
-        margin-right 20px
-        margin-left 58px
-        width 140px
-        position relative
-        color #ffffff
-        font-size 16px
-        img {
-          width: 13px;
-          height: 9px;
-        }
-        .user-head{
-          width: 28px;
-          height: 28px;
-          border-radius 50%
-          position: relative;
-          top: 8px;
-          margin-right: 5px;
-        }
-        ul {
-          background-color: #fff;
-          position: absolute;
-          top: 64px;
-          right: 20px;
-          text-align: center;
-          width: 130px;
-          font-size: 16px;
-          box-shadow: 0 5px 15px 0 rgba(175, 192, 209, 0.55);
-          li {
-            height 40px
-            line-height 40px
-            color #333333
-            a {
-              color #333333
-            }
-          }
-          li:hover {
-            color #1d79fe
-            a {
-              color #1d79fe
-            }
-          }
         }
       }
     }

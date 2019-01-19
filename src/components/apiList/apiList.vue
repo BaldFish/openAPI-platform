@@ -62,7 +62,7 @@
           <div class="table-title">
             <i></i>
             <p>交易流水</p>
-            <p>支出总额：<span>18008.00</span></p>
+            <!--<p>支出总额：<span>18008.00</span></p>-->
           </div>
         </caption>
         <thead>
