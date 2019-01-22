@@ -41,8 +41,11 @@
           <el-dialog title="绑定手机号" :visible.sync="dialogBindVisible" class="bind-phone">
             <div v-if="isSuccess">
               <el-form :model="formBindPhone">
-                <el-form-item label="输入绑定手机号码：" :label-width="formLabelWidth">
+                <el-form-item label="输入绑定手机号码：" :label-width="formLabelWidth" v-if="isChecked">
                   <el-input v-model="formBindPhone.phone" auto-complete="off" placeholder="请输入手机号"></el-input>
+                </el-form-item>
+                <el-form-item label="绑定手机：" :label-width="formLabelWidth" v-else>
+                  <p style="margin-top: 0;line-height: 40px">{{accountInfo.phone}}</p>
                 </el-form-item>
                 <el-form-item label="图形验证码：" :label-width="formLabelWidth">
                   <el-input v-model="formBindPhone.captcha_number" auto-complete="off" placeholder="请输入图形验证码"></el-input>
@@ -50,8 +53,14 @@
                 </el-form-item>
                 <el-form-item label="短信验证码：" :label-width="formLabelWidth">
                   <el-input v-model="formBindPhone.code" auto-complete="off" placeholder="请输入短信验证码"></el-input>
-                  <span class="send-phone" v-if="isSend" @click="getCode">发送</span>
-                  <span class="send-phone count_down" v-else>{{second}}s</span>
+                  <div v-if="isChecked">
+                    <span class="send-phone" v-if="isSend" @click="getCode(1)">发送</span>
+                    <span class="send-phone count_down" v-else>{{second}}s</span>
+                  </div>
+                  <div v-else>
+                    <span class="send-phone" v-if="isSend" @click="getCode(2)">发送</span>
+                    <span class="send-phone count_down" v-else>{{second}}s</span>
+                  </div>
                   <p class="error-pwd">{{errorPhone}}</p>
                 </el-form-item>
               </el-form>
@@ -93,7 +102,7 @@
                     <span>是</span>
                   </label>
                   <label>
-                    <input type="radio" name="radio" v-model="formWarning.status" value="2">
+                    <input type="radio" name="radio" v-model="formWarning.status" value="0">
                     <i></i>
                     <span>否</span>
                   </label>
@@ -103,7 +112,7 @@
                 <el-input v-model="formWarning.amount" auto-complete="off" placeholder="请输入预警金额"></el-input>
               </el-form-item>
               <el-form-item label="预警手机号：" :label-width="formLabelWidth">
-                <p style="margin-top: 0;line-height: 40px">{{accountInfo.phone}}</p>
+                <p style="margin-top: 0;line-height: 40px">{{formWarning.phone}}</p>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -142,6 +151,7 @@
         formWarning: {
           status: '1',
           amount: '',
+          phone:''
         },
         formLabelWidth: '120px',
         accountInfo:"",
@@ -152,7 +162,8 @@
         captcha_img:"",
         captcha_id:"",
         second: 60,// 发送验证码倒计时
-
+        isChecked: false,
+        interval:''
       }
     },
     created() {
@@ -180,7 +191,13 @@
           }
         }).then(res => {
           this.accountInfo = res.data;
-          this.accountInfo.phone = this.accountInfo.phone.slice(3)
+          this.accountInfo.phone = this.accountInfo.phone.slice(3);
+          //校验手机号是否同一个人
+          if(this.accountInfo.phone){
+            this.isChecked = false
+          }else{
+            this.isChecked = true
+          }
         }).catch(error => {
           console.log(error);
         })
@@ -226,13 +243,17 @@
       //打开手机号modal
       openPhoneModal(){
         this.dialogBindVisible = true;
-        //重置数据
+        //清除定时器
+        window.clearInterval(this.interval);
+        this.second = 60;
         this.isSend = true;
+        //重置数据
         this.formBindPhone = {
           phone: '',
           captcha_number: '',
           code: '',
         };
+        this.getCaptcha();
       },
       //关闭绑定手机号modal
       closeBindModal(){
@@ -254,25 +275,45 @@
           console.log(error);
         });
       },
+      //倒计时
+      countDown(){
+        let me = this;
+        me.isSend = false;
+        this.interval = window.setInterval(function () {
+          if ((me.second--) <= 0) {
+            me.second = 60;
+            me.isSend = true;
+            window.clearInterval(this.interval);
+          }
+        }, 1000);
+      },
       //获取短信验证码
-      getCode() {
-        if(this.formBindPhone.phone){
-          //倒计时
-          let me = this;
-          me.isSend = false;
-          let interval = window.setInterval(function () {
-            if ((me.second--) <= 0) {
-              me.second = 60;
-              me.isSend = true;
-              window.clearInterval(interval);
-            }
-          }, 1000);
-          //get短信验证码
+      getCode(id) {
+        let phone = '';
+        if(id == 1){
+          if(this.formBindPhone.phone){
+            this.countDown();
+            phone = "+86" + this.formBindPhone.phone;
+            this.$axios({
+              method: 'post',
+              url: `${this.$baseURL}/v1/sms/code`,
+              data: this.$querystring.stringify({
+                phone: phone, //手机号
+                type: 3 //1-注册，2-修改密码, 3-登录
+              })
+            }).then(res => {
+            }).catch(error => {
+              console.log(error);
+            })
+          }
+        }else if(id == 2){
+          this.countDown();
+          phone = "+86" + this.accountInfo.phone;
           this.$axios({
             method: 'post',
             url: `${this.$baseURL}/v1/sms/code`,
             data: this.$querystring.stringify({
-              phone: "+86" + this.formBindPhone.phone, //手机号
+              phone: phone, //手机号
               type: 3 //1-注册，2-修改密码, 3-登录
             })
           }).then(res => {
@@ -283,46 +324,97 @@
       },
       //绑定手机号
       bindPhone(){
-        this.formBindPhone.user_id = this.userInfo.user_id;
-        if(this.formBindPhone.phone){
-          this.formBindPhone.phone = "+86" + this.formBindPhone.phone;
+        if(!this.isChecked){
+          let data = {
+            user_id: this.userInfo.user_id,
+            code: this.formBindPhone.code,
+            captcha_id: this.formBindPhone.captcha_id,
+            captcha_number: this.formBindPhone.captcha_number,
+          };
+          this.$axios({
+            method: 'POST',
+            url: `${this.$baseURL}/v1/platform/user/phone/check`,
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-Access-Token": this.userInfo.token,
+            },
+            data: this.$querystring.stringify(data)
+          }).then(res => {
+            this.isChecked = true;
+            this.getCaptcha();
+            //清除定时器
+            window.clearInterval(this.interval);
+            this.second = 60;
+            this.isSend = true;
+            //重置数据
+            this.formBindPhone = {
+              phone: '',
+              captcha_number: '',
+              code: '',
+            };
+          }).catch(error => {
+            console.log(error);
+          })
+        }else{
+          this.formBindPhone.user_id = this.userInfo.user_id;
+          if(this.formBindPhone.phone){
+            this.formBindPhone.phone = "+86" + this.formBindPhone.phone;
+          }
+          this.$axios({
+            method: 'PATCH',
+            url: `${this.$baseURL}/v1/platform/user/phone/change`,
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-Access-Token": this.userInfo.token,
+            },
+            data: this.$querystring.stringify(this.formBindPhone)
+          }).then(res => {
+            this.isSuccess = false;
+          }).catch(error => {
+            //this.errorPhone = res.data
+            console.log(error,"error");
+          })
         }
-        this.$axios({
-          method: 'PATCH',
-          url: `${this.$baseURL}/v1/platform/user/phone/change`,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Access-Token": this.userInfo.token,
-          },
-          data: this.$querystring.stringify(this.formBindPhone)
-        }).then(res => {
-          this.isSuccess = false;
-        }).catch(error => {
-          //this.errorPhone = res.data
-          console.log(error,"error");
-        })
       },
       //打开金额预警modal
       openWarningModal(){
         if(this.accountInfo.phone){
           this.dialogWarningVisible = true;
-          //重置数据
-          this.formWarning = {
-            status: '1',
-            amount: '',
-          }
+          //获取预警金额信息
+          this.$axios({
+            method: 'GET',
+            url: `${this.$baseURL}/v1/platform/user/balance/warning/${this.userInfo.user_id}`,
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-Access-Token": this.userInfo.token,
+            }
+          }).then(res => {
+            this.formWarning = {
+              status: res.data.data.warning_status.toString(),
+              amount: res.data.data.warning_balance,
+              phone: res.data.data.phone,
+            }
+          }).catch(error => {
+            console.log(error);
+          })
         } else {
           this.$alert('请先绑定手机号', '提示', {
             confirmButtonText: '确定',
             callback: action => {
-              this.dialogBindVisible = true;
-              //重置数据
-              this.isSend = true;
-              this.formBindPhone = {
-                phone: '',
-                captcha_number: '',
-                code: '',
-              };
+              let that = this;
+              setTimeout(function () {
+                that.dialogBindVisible = true;
+                //清除定时器
+                window.clearInterval(this.interval);
+                this.second = 60;
+                this.isSend = true;
+                //重置数据
+                this.formBindPhone = {
+                  phone: '',
+                  captcha_number: '',
+                  code: '',
+                };
+              },500);
             }
           });
         }
