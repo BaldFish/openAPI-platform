@@ -10,7 +10,7 @@
           <label>注册账号</label>
           <p>{{accountInfo.email}}</p>
           <el-button type="text" @click="openPwdModal">修改登录密码&nbsp;></el-button>
-          <el-dialog title="修改登录密码" :visible.sync="dialogPwdVisible">
+          <el-dialog title="修改登录密码" :visible.sync="dialogPwdVisible" width="512px">
             <el-form :model="formPwd">
               <el-form-item label="旧密码：" :label-width="formLabelWidth">
                 <el-input type="password" v-model="formPwd.old" auto-complete="off" placeholder="请输入旧密码"></el-input>
@@ -38,7 +38,7 @@
           <p style="margin-right: 20px">{{accountInfo.phone}}</p>
           <el-button type="text" @click="openPhoneModal" class="to-bind" v-if="!accountInfo.phone">去绑定&nbsp;></el-button>
           <el-button type="text" @click="openPhoneModal" class="to-bind" v-else>去换绑&nbsp;></el-button>
-          <el-dialog title="绑定手机号" :visible.sync="dialogBindVisible" class="bind-phone">
+          <el-dialog title="绑定手机号" :visible.sync="dialogBindVisible" class="bind-phone" width="512px">
             <div v-if="isSuccess">
               <el-form :model="formBindPhone">
                 <el-form-item label="输入绑定手机号码：" :label-width="formLabelWidth" v-if="isChecked">
@@ -92,7 +92,7 @@
           <label>账号余额</label>
           <p>{{accountInfo.balance}}</p>
           <el-button type="text" @click="openWarningModal">金额预警&nbsp;></el-button>
-          <el-dialog title="预警设置" :visible.sync="dialogWarningVisible">
+          <el-dialog title="预警设置" :visible.sync="dialogWarningVisible" width="512px">
             <el-form :model="formWarning">
               <el-form-item label="是否开启：" :label-width="formLabelWidth">
                 <div class="radio-list">
@@ -504,7 +504,6 @@
     color: #e60000 !important;
   }
   .el-dialog{
-    width: 512px;
     background-color: #ffffff;
     border-radius: 30px;
     .el-dialog__header{
