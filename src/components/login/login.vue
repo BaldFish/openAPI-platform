@@ -94,8 +94,7 @@
           window.sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
           this.$router.push({path: '/home'});
         }).catch(error => {
-          console.log(error);
-          //this.errorMsg = error
+          this.errorMsg = error.response.data.message
         });
       },
     },

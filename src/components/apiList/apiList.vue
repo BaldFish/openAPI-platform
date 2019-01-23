@@ -67,7 +67,7 @@
         </caption>
         <thead>
         <tr>
-          <th>能力</th>
+          <th>名称</th>
           <th>购买时间</th>
           <th>支付金额</th>
           <th>剩余金额</th>
@@ -186,7 +186,7 @@
           }
         }).then(res => {
           this.total = res.data.data.total_count;
-          
+
           this.tradingList = res.data.data.res_list
         }).catch(error => {
           console.log(error)
@@ -223,20 +223,20 @@
   .apiList {
     width: 1200px
     margin: 0 auto
-    
+
     .apiList-search {
       width: 1200px;
       height: 70px;
       background-color: #f6f8fd;
       border: solid 1px #bfbfbf;
       margin: 22px 0 27px 0
-      
+
       label {
         font-size: 20px;
         color: #333333;
         float left
       }
-      
+
       input {
         width: 110px;
         height: 38px;
@@ -250,12 +250,12 @@
         float right
         margin: 16px 20px 16px 0
       }
-      
+
       .search-select {
         float left
         margin-left 30px
         line-height 70px
-        
+
         .select {
           width: 180px;
           height: 34px;
@@ -267,7 +267,7 @@
           box-sizing border-box
           padding-left 15px
           cursor pointer
-          
+
           i {
             width: 24px;
             height: 15px;
@@ -278,7 +278,7 @@
             float: right;
             cursor pointer
           }
-          
+
           ul {
             width: 180px
             box-sizing border-box
@@ -288,47 +288,47 @@
             position relative
             right: 16px
             padding-left 15px
-            
+
             li {
               font-size: 14px
               color: #333333
               cursor pointer
             }
-            
+
             li:hover {
               color: #1d79fe;
             }
           }
         }
       }
-      
+
       .search-time {
         line-height 70px
         margin-left 60px
         float: left;
       }
-      
+
     }
-    
+
     .apiList-ability {
       width: 1200px;
       height: 100%;
       border: solid 1px #bfbfbf;
       margin-bottom 20px
-      
+
       table {
         width: 1200px;
-        
+
         caption {
           height: 70px;
           background-color: #f6f8fd;
-          
+
           .table-title {
             //float left
             //width: 300px
             height: 70px;
             line-height 70px
-            
+
             i {
               width: 36px;
               height: 36px;
@@ -338,7 +338,7 @@
               float left
               margin: 17px 12px
             }
-            
+
             p {
               float left
               font-size: 20px;
@@ -346,34 +346,34 @@
             }
           }
         }
-        
+
         thead {
           font-size: 16px;
           color: #333333;
-          
+
           tr {
             height: 60px
             line-height 60px
             text-align left
-            
+
             th:nth-child(1) {
               width: 200px
             }
-            
+
             th:nth-child(2) {
               width: 320px
             }
           }
         }
-        
+
         tbody {
           font-size: 18px;
           color: #666666;
-          
+
           tr {
             height: 50px;
             line-height 50px
-            
+
             i {
               width: 22px;
               height: 22px;
@@ -384,42 +384,42 @@
               top: 5px;
               left: 89px
             }
-            
+
             input {
               display none
             }
-            
+
             input:checked + i {
               background url("../../common/images/checked.png") no-repeat center
               background-size 100% 100%
             }
           }
-          
+
           tr:nth-child(odd) {
             background-color: #f6f8fd;
           }
         }
       }
     }
-    
+
     .apiList-flow {
       width: 1200px;
       height: 100%;
       border: solid 1px #bfbfbf;
-      
+
       table {
         width: 1200px;
-        
+
         caption {
           height: 70px;
           background-color: #f6f8fd;
-          
+
           .table-title {
             //float left
             //width: 300px
             height: 70px;
             line-height 70px
-            
+
             i {
               width: 36px;
               height: 36px;
@@ -429,19 +429,19 @@
               float left
               margin: 17px 12px
             }
-            
+
             p {
               float left
               font-size: 20px;
               color: #333333;
             }
-            
+
             p:nth-child(3) {
               float right
               margin-right 80px
               font-size: 18px;
               color: #666666;
-              
+
               span {
                 font-size: 18px;
                 color: #03a529;
@@ -449,44 +449,44 @@
             }
           }
         }
-        
+
         thead {
           font-size: 16px;
           color: #333333;
-          
+
           tr {
             height: 60px
             line-height 60px
             text-align left
-            
+
             th:nth-child(1) {
               width: 240px;
               padding-left 50px
             }
-            
+
             th:nth-child(2) {
               width: 320px
             }
           }
         }
-        
+
         tbody {
           font-size: 18px;
           color: #666666;
-          
+
           tr {
             height: 50px;
             line-height 50px
-            
+
             td:nth-child(1) {
               padding-left 50px
             }
-            
+
             .red {
               color: #e60000;
             }
           }
-          
+
           tr:nth-child(odd) {
             background-color: #f6f8fd;
           }

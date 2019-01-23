@@ -16,10 +16,10 @@
                 <el-input type="password" v-model="formPwd.old" auto-complete="off" placeholder="请输入旧密码"></el-input>
               </el-form-item>
               <el-form-item label="新密码：" :label-width="formLabelWidth">
-                <el-input type="password" v-model="formPwd.new" auto-complete="off" @blur="checkPwd" placeholder="请输入6～20位包含中英文字符密码"></el-input>
+                <el-input type="password" v-model="formPwd.new1" auto-complete="off" placeholder="请输入6～20位包含中英文字符密码"></el-input>
               </el-form-item>
               <el-form-item label="重复新密码：" :label-width="formLabelWidth">
-                <el-input type="password" v-model="formPwd.newRepeat" auto-complete="off" @blur="checkPwd" placeholder="请重复密码"></el-input>
+                <el-input type="password" v-model="formPwd.new2" auto-complete="off" placeholder="请重复密码"></el-input>
                 <span class="error-pwd">{{errorPwd}}</span>
               </el-form-item>
             </el-form>
@@ -61,7 +61,7 @@
                     <span class="send-phone" v-if="isSend" @click="getCode(2)">发送</span>
                     <span class="send-phone count_down" v-else>{{second}}s</span>
                   </div>
-                  <p class="error-pwd">{{errorPhone}}</p>
+                  <span class="error-pwd">{{errorPhone}}</span>
                 </el-form-item>
               </el-form>
               <div slot="footer" class="dialog-footer">
@@ -113,6 +113,8 @@
               </el-form-item>
               <el-form-item label="预警手机号：" :label-width="formLabelWidth">
                 <p style="margin-top: 0;line-height: 40px">{{formWarning.phone}}</p>
+                <br>
+                <span class="error-pwd">{{errorWarning}}</span>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -140,8 +142,8 @@
         isSuccess: true,
         formPwd: {
           old: '',
-          new: '',
-          newRepeat: '',
+          new1: '',
+          new2: '',
         },
         formBindPhone: {
           phone: '',
@@ -158,6 +160,7 @@
         userInfo:"",
         errorPwd:"",
         errorPhone:"",
+        errorWarning:"",
         isSend: true,
         captcha_img:"",
         captcha_id:"",
@@ -208,37 +211,27 @@
         //重置数据
         this.formPwd = {
           old: '',
-          new: '',
-          newRepeat: '',
+          new1: '',
+          new2: '',
         };
         this.errorPwd = ""
       },
       //修改密码
       modifyPassword() {
-        if (!this.errorPwd){
-          this.formPwd.user_id = this.userInfo.user_id;
-          this.$axios({
-            method: 'PATCH',
-            url: `${this.$baseURL}/v1/platform/user/passwd/change`,
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              "X-Access-Token": this.userInfo.token,
-            },
-            data: this.$querystring.stringify(this.formPwd)
-          }).then(res => {
-            this.dialogPwdVisible = false;
-          }).catch(error => {
-            console.log(error);
-          })
-        }
-      },
-      //校验密码
-      checkPwd(){
-        if (this.formPwd.new != this.formPwd.newRepeat){
-          this.errorPwd = "两次输入的密码不正确"
-        } else {
-          this.errorPwd = ""
-        }
+        this.formPwd.user_id = this.userInfo.user_id;
+        this.$axios({
+          method: 'PATCH',
+          url: `${this.$baseURL}/v1/platform/user/passwd/change`,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Access-Token": this.userInfo.token,
+          },
+          data: this.$querystring.stringify(this.formPwd)
+        }).then(res => {
+          this.dialogPwdVisible = false;
+        }).catch(error => {
+          this.errorPwd = error.response.data.message
+        })
       },
       //打开手机号modal
       openPhoneModal(){
@@ -253,6 +246,7 @@
           captcha_number: '',
           code: '',
         };
+        this.errorPhone = '';
         this.getCaptcha();
       },
       //关闭绑定手机号modal
@@ -353,7 +347,7 @@
               code: '',
             };
           }).catch(error => {
-            console.log(error);
+            this.errorPhone = error.response.data.message
           })
         }else{
           this.formBindPhone.user_id = this.userInfo.user_id;
@@ -371,8 +365,7 @@
           }).then(res => {
             this.isSuccess = false;
           }).catch(error => {
-            //this.errorPhone = res.data
-            console.log(error,"error");
+            this.errorPhone = error.response.data.message
           })
         }
       },
@@ -380,6 +373,7 @@
       openWarningModal(){
         if(this.accountInfo.phone){
           this.dialogWarningVisible = true;
+          this.errorWarning = '';
           //获取预警金额信息
           this.$axios({
             method: 'GET',
@@ -421,22 +415,20 @@
       },
       //预警设置
       setWarning(){
-        if(this.formWarning.amount){
-          this.formWarning.user_id = this.userInfo.user_id;
-          this.$axios({
-            method: 'POST',
-            url: `${this.$baseURL}/v1/platform/user/balance/warning`,
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              "X-Access-Token": this.userInfo.token,
-            },
-            data: this.$querystring.stringify(this.formWarning)
-          }).then(res => {
-            this.dialogWarningVisible = false;
-          }).catch(error => {
-            console.log(error);
-          })
-        }
+        this.formWarning.user_id = this.userInfo.user_id;
+        this.$axios({
+          method: 'POST',
+          url: `${this.$baseURL}/v1/platform/user/balance/warning`,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Access-Token": this.userInfo.token,
+          },
+          data: this.$querystring.stringify(this.formWarning)
+        }).then(res => {
+          this.dialogWarningVisible = false;
+        }).catch(error => {
+          this.errorWarning = error.response.data.message
+        })
       }
 
 
