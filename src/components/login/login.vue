@@ -44,9 +44,7 @@
     beforeMount() {
     },
     mounted() {
-      this.$nextTick(() => {
-        this.getCaptcha()
-      });
+      this.getCaptcha()
     },
     watch: {},
     computed: {
