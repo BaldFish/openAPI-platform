@@ -15,6 +15,7 @@
             <p>{{li.api_desc}}</p>
           </li>
         </ul>
+        <div style="clear: both"></div>
       </div>
     </div>
   </div>
@@ -63,9 +64,10 @@
   .ability {
     width: 1200px
     margin: 0 auto
+    margin-bottom: 60px;
     .container{
       margin-top 20px
-      height: 350px;
+      height: 100%;
       border: solid 1px #bfbfbf;
       .title{
         font-size: 20px;
@@ -84,6 +86,7 @@
         }
       }
       .details{
+        padding-bottom: 12px;
         ul{
           li{
             width: 398px;
@@ -116,12 +119,12 @@
               margin: 0 40px
             }
           }
-          li:nth-child(1){
+          li:nth-child(odd){
             background url("../../common/images/ability_bg_01.png") no-repeat center
             background-size 100% 100%
             margin-left 162px
           }
-          li:nth-child(2){
+          li:nth-child(even){
             background url("../../common/images/ability_bg_02.png") no-repeat center
             background-size 100% 100%
             float right

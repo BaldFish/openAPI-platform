@@ -72,6 +72,9 @@
       if (this.$route.path == "/login") {
         this.isShowTopSearch = false;
       }
+      if(sessionStorage.userInfo){
+        this.userName=JSON.parse(sessionStorage.getItem("userInfo")).email;
+      }
     },
     watch: {
       //监听路由变化执行方法

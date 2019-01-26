@@ -8,7 +8,7 @@
       <ul>
         <li class="clearfix">
           <label>注册账号</label>
-          <p>{{accountInfo.email}}</p>
+          <p>{{accountInfo.user_name}}</p>
           <el-button type="text" @click="openPwdModal">修改登录密码&nbsp;></el-button>
           <el-dialog title="修改登录密码" :visible.sync="dialogPwdVisible" width="512px">
             <el-form :model="formPwd">
@@ -352,8 +352,8 @@
           })
         }else{
           this.formBindPhone.user_id = this.userInfo.user_id;
-          let formData = this.formBindPhone;
-          formData.phone = "+86" + this.formBindPhone.phone;
+          let newObj = Object.assign({}, this.formBindPhone);
+          newObj.phone = "+86" + this.formBindPhone.phone;
           this.$axios({
             method: 'PATCH',
             url: `${this.$baseURL}/v1/platform/user/phone/change`,
@@ -361,7 +361,7 @@
               "Content-Type": "application/x-www-form-urlencoded",
               "X-Access-Token": this.userInfo.token,
             },
-            data: this.$querystring.stringify(formData)
+            data: this.$querystring.stringify(newObj)
           }).then(res => {
             this.isSuccess = false;
           }).catch(error => {
