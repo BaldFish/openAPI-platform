@@ -336,6 +336,7 @@
           }).then(res => {
             this.isChecked = true;
             this.getCaptcha();
+            this.errorPhone = '';
             //清除定时器
             window.clearInterval(this.interval);
             this.second = 60;
@@ -351,9 +352,8 @@
           })
         }else{
           this.formBindPhone.user_id = this.userInfo.user_id;
-          if(this.formBindPhone.phone){
-            this.formBindPhone.phone = "+86" + this.formBindPhone.phone;
-          }
+          let formData = this.formBindPhone;
+          formData.phone = "+86" + this.formBindPhone.phone;
           this.$axios({
             method: 'PATCH',
             url: `${this.$baseURL}/v1/platform/user/phone/change`,
@@ -361,7 +361,7 @@
               "Content-Type": "application/x-www-form-urlencoded",
               "X-Access-Token": this.userInfo.token,
             },
-            data: this.$querystring.stringify(this.formBindPhone)
+            data: this.$querystring.stringify(formData)
           }).then(res => {
             this.isSuccess = false;
           }).catch(error => {
